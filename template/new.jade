@@ -1,0 +1,16 @@
+
+h1= title
+block new_product
+    p Welcome to #{title}
+    form(name="add-product", method="post")
+        div.input
+            span.label Name
+            input(type="text", name="name")
+        div.input
+            span.label Size
+            input(type="text", name="size")
+        div.input
+            span.label Quantity
+            input(type="text", name="quantity")
+        div.actions
+            input(type="submit", value="Add")

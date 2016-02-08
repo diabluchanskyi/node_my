@@ -14,17 +14,17 @@ var Product = require('model/product').Product;
 var app = express();
 
 
-app.engine('ejs', require('ejs-locals'));
 app.set("port", config.get('port'));
 app.set('views', path.join(__dirname, '/template'));
-app.set('view engine', 'ejs');
+app.set('view engine', 'jade');
 app.use(express.static(path.join(__dirname, 'public')));
 
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 
 app.use(morgan('dev'));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 //app.use(cookieParser);
 //app.use(router);
 
@@ -34,25 +34,34 @@ http.createServer(app).listen(config.get('port'), function () {
 });
 
 
-app.get('/save', function (req, res, next) {
+app.get('/new', function (req, res, next) {
+
+
+    res.render("new",{});
+});
+
+app.post('/new', function(req, res, err){
     var product = new Product();
-    product.name = 'Milk';
-    product.size = '25ml';
-    product.quantity = '1';
+    product.name = req.body.name;
+    product.size = req.body.size;
+    product.quantity = req.body.quantity;
     product.save(function (err) {
         if (err) {
             res.send(err);
         }
-        //res.join({ message: 'Beer added to the locker!', data: product })
+    res.redirect('/get')
     });
 });
 
-app.get('/new', function (req, res, next) {
-    var product = new Product();
+app.get('/edit/:_id', function() {
+    var res = new Product().find({ _id:req.body._id});
+    res.render('new', res);
+});
 
-
-    }
-);
+app.param(['_id'], function(req, res, next, value){
+    req.body._id = value;
+    next();
+});
 
 
 app.get('/get', function (req, res, next) {
